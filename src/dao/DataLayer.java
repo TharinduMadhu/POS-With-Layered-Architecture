@@ -3,8 +3,6 @@ package dao;
 import db.DBConnection;
 import util.CustomerTM;
 import util.ItemTM;
-import util.OrderDetailTM;
-import util.OrderTM;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -35,7 +33,7 @@ public class DataLayer {
     public static boolean saveCustomer(CustomerTM customer) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO CUSTOMER VALUES (?,?,?,)");
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO CUSTOMER VALUES (?,?,?)");
             pstm.setObject(1, customer.getId());
             pstm.setObject(2, customer.getName());
             pstm.setObject(3, customer.getAddress());
@@ -44,20 +42,19 @@ public class DataLayer {
             throwables.printStackTrace();
             return false;
         }
-
     }
 
 
     public static boolean deleteCustomer(String customerId) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM CUSTOMER WHERE customerId=?");
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM CUSTOMER WHERE id=?");
             pstm.setObject(1, customerId);
             return pstm.executeUpdate() > 0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public static boolean updateCustomer(CustomerTM customer) {
@@ -79,7 +76,7 @@ public class DataLayer {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM  items");
+            ResultSet rst = stm.executeQuery("SELECT * FROM  item");
             ArrayList<ItemTM> items = new ArrayList<>();
             while (rst.next()) {
                 items.add(new ItemTM(rst.getString(1), rst.getString(2),
@@ -111,9 +108,9 @@ public class DataLayer {
     public static boolean deleteItem(String code) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE code=?");
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM item WHERE code=?");
             pstm.setObject(1, code);
-            return pstm.executeUpdate() > 0;
+            return (pstm.executeUpdate() > 0);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
@@ -124,15 +121,31 @@ public class DataLayer {
     public static boolean updateItem(ItemTM item) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?,unitPrice=?,qtyOnHand=?,where=?");
+            PreparedStatement pstm = connection.prepareStatement("UPDATE item SET description=?,unitPrice=?,qtyOnHand=? where code=?");
             pstm.setObject(1, item.getDescription());
             pstm.setObject(2, item.getUnitPrice());
             pstm.setObject(3, item.getQtyOnHand());
             pstm.setObject(4, item.getCode());
-            return pstm.executeUpdate()>0;
+            return (pstm.executeUpdate() > 0);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
+        }
+    }
+
+    public static String getLastCustomerId() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM customer ORDER BY id DESC LIMIT 1 ");
+            if (rst.next()) {
+                return rst.getString(1);
+            } else {
+                return null;
+            }
+        } catch (SQLException thtowables) {
+            thtowables.printStackTrace();
+            return null;
         }
     }
 

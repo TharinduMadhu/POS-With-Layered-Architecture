@@ -5,10 +5,13 @@
  */
 package controller;
 
+import business.BusinessLayer;
 import com.jfoenix.controls.JFXTextField;
+import dao.DataLayer;
 import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +27,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import util.CustomerTM;
 import util.ItemTM;
 
 import java.io.IOException;
@@ -32,13 +36,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
  * FXML Controller class
  *
- * @author ranjith-suranga
  */
 public class ManageItemFormController implements Initializable {
 
@@ -101,21 +105,9 @@ public class ManageItemFormController implements Initializable {
     }
 
     private void loadAllItems() {
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Item");
-            ObservableList<ItemTM> items = tblItems.getItems();
-            items.clear();
-            while (rst.next()) {
-                String code = rst.getString(1);
-                String description = rst.getString(2);
-                double unitPrice = rst.getDouble(3);
-                int qtyOnHand = rst.getInt(4);
-                items.add(new ItemTM(code, description, qtyOnHand, unitPrice));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        ObservableList<ItemTM> items = tblItems.getItems();
+        items.clear();
+        items.addAll(FXCollections.observableArrayList(BusinessLayer.getAllItems()));
     }
 
     @FXML
@@ -130,14 +122,12 @@ public class ManageItemFormController implements Initializable {
 
     @FXML
     private void btnSave_OnAction(ActionEvent event) {
-
         if (txtDescription.getText().trim().isEmpty() ||
                 txtQtyOnHand.getText().trim().isEmpty() ||
                 txtUnitPrice.getText().trim().isEmpty()) {
             new Alert(Alert.AlertType.ERROR, "Description, Qty. on Hand or Unit Price can't be empty").show();
             return;
         }
-
         int qtyOnHand = Integer.parseInt(txtQtyOnHand.getText().trim());
         double unitPrice = Double.parseDouble(txtUnitPrice.getText().trim());
 
@@ -147,43 +137,26 @@ public class ManageItemFormController implements Initializable {
         }
 
         if (btnSave.getText().equals("Save")) {
-
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
-                pstm.setObject(1, txtCode.getText());
-                pstm.setObject(2, txtDescription.getText());
-                pstm.setObject(3, qtyOnHand);
-                pstm.setObject(4, unitPrice);
-                if (pstm.executeUpdate() == 0) {
+              boolean result =BusinessLayer.saveItem(txtCode.getText(), txtDescription.getText(),
+                     qtyOnHand,unitPrice);
+                if (!result) {
                     new Alert(Alert.AlertType.ERROR, "Failed to save the item", ButtonType.OK).show();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
             btnAddNew_OnAction(event);
         } else {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
+            boolean result =BusinessLayer.updateItem(txtCode.getText(), txtDescription.getText()
+            , qtyOnHand,unitPrice);
 
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
-                pstm.setObject(1, txtDescription.getText());
-                pstm.setObject(2, unitPrice);
-                pstm.setObject(3, qtyOnHand);
-                pstm.setObject(4, selectedItem.getCode());
-                if (pstm.executeUpdate() == 0) {
+                if (!result) {
                     new Alert(Alert.AlertType.ERROR, "Failed to update the Item").show();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-
-
             tblItems.refresh();
             btnAddNew_OnAction(event);
-        }
         loadAllItems();
     }
+
 
     @FXML
     private void btnDelete_OnAction(ActionEvent event) {
@@ -193,20 +166,18 @@ public class ManageItemFormController implements Initializable {
         Optional<ButtonType> buttonType = alert.showAndWait();
         if (buttonType.get() == ButtonType.YES) {
             ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
-                pstm.setObject(1, selectedItem.getCode());
-                if (pstm.executeUpdate() == 0) {
+            boolean result = BusinessLayer.deleteItem(selectedItem.getCode());
+//            try {
+//                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Item WHERE code=?");
+//                pstm.setObject(1, selectedItem.getCode());
+                if (!result) {
                     new Alert(Alert.AlertType.ERROR, "Failed to delete the item", ButtonType.OK).show();
                 } else {
                     tblItems.getItems().remove(selectedItem);
                     tblItems.getSelectionModel().clearSelection();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
-    }
 
     @FXML
     private void btnAddNew_OnAction(ActionEvent actionEvent) {

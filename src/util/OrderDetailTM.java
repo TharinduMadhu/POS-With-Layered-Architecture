@@ -3,6 +3,7 @@ package util;
 import javafx.scene.control.Button;
 
 public class OrderDetailTM {
+
     private String code;
     private String description;
     private int qty;

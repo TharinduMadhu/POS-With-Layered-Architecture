@@ -5,9 +5,11 @@
  */
 package controller;
 
+import business.BusinessLayer;
 import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -95,20 +97,10 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     private void loadAllCustomers() {
-        try {
-            ObservableList<CustomerTM> customers = tblCustomers.getItems();
-            customers.clear();
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Customer");
-            while (rst.next()) {
-                String id = rst.getString(1);
-                String name = rst.getString(2);
-                String address = rst.getString(3);
-                customers.add(new CustomerTM(id, name, address));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        try {
+        ObservableList<CustomerTM> customers = tblCustomers.getItems();
+        customers.clear();
+        customers.addAll(FXCollections.observableArrayList(BusinessLayer.getAllCustomers()));
     }
 
     @FXML
@@ -125,6 +117,7 @@ public class ManageCustomerFormController implements Initializable {
     private void btnSave_OnAction(ActionEvent event) {
         String name = txtCustomerName.getText();
         String address = txtCustomerAddress.getText();
+        String id = txtCustomerId.getText();
 
         // Validation
         if (name.trim().length() == 0 || address.trim().length() == 0) {
@@ -133,39 +126,18 @@ public class ManageCustomerFormController implements Initializable {
         }
 
         if (btnSave.getText().equals("Save")) {
-
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
-                pstm.setObject(1, txtCustomerId.getText());
-                pstm.setObject(2, txtCustomerName.getText());
-                pstm.setObject(3, txtCustomerAddress.getText());
-                int affectedRows = pstm.executeUpdate();
-                if (affectedRows == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to add the customer", ButtonType.OK).show();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            BusinessLayer.saveCustomer(id, name, address);
             btnAddNew_OnAction(event);
         } else {
             CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
-
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
-                pstm.setObject(1, txtCustomerName.getText());
-                pstm.setObject(2, txtCustomerAddress.getText());
-                pstm.setObject(3, selectedItem.getId());
-                if (pstm.executeUpdate() == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Failed to update the customer", ButtonType.OK).show();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            boolean result = BusinessLayer.updateCustomer(selectedItem.getId(), selectedItem.getName(), selectedItem.getAddress());
+            if (!result) {
+                new Alert(Alert.AlertType.ERROR, "Failed to update the customer", ButtonType.OK).show();
+                tblCustomers.refresh();
+                btnAddNew_OnAction(event);
             }
-
-            tblCustomers.refresh();
-            btnAddNew_OnAction(event);
+            loadAllCustomers();
         }
-        loadAllCustomers();
     }
 
     @FXML
@@ -177,17 +149,12 @@ public class ManageCustomerFormController implements Initializable {
         if (buttonType.get() == ButtonType.YES) {
             CustomerTM selectedItem = tblCustomers.getSelectionModel().getSelectedItem();
 
-            try {
-                PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("DELETE FROM Customer WHERE id=?");
-                pstm.setObject(1, selectedItem.getId());
-                if (pstm.executeUpdate() == 0) {
+           boolean result = BusinessLayer.deleteCustomer(selectedItem.getId());
+                if (!result) {
                     new Alert(Alert.AlertType.ERROR, "Failed to delete the customer", ButtonType.OK).show();
                 } else {
                     tblCustomers.getItems().remove(selectedItem);
                     tblCustomers.getSelectionModel().clearSelection();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -202,28 +169,7 @@ public class ManageCustomerFormController implements Initializable {
         txtCustomerAddress.setDisable(false);
         txtCustomerName.requestFocus();
         btnSave.setDisable(false);
-
-        // Generate a new id
-        int maxId = 0;
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT id FROM Customer ORDER BY id DESC LIMIT 1");
-            if (rst.next()) {
-                maxId = Integer.parseInt(rst.getString(1).replace("C", ""));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        maxId = maxId + 1;
-        String id = "";
-        if (maxId < 10) {
-            id = "C00" + maxId;
-        } else if (maxId < 100) {
-            id = "C0" + maxId;
-        } else {
-            id = "C" + maxId;
-        }
-        txtCustomerId.setText(id);
+        txtCustomerId.setText(BusinessLayer.generateNewCustomerId());
 
     }
 

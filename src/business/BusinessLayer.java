@@ -7,13 +7,31 @@ import util.ItemTM;
 import util.OrderDetailTM;
 import util.OrderTM;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessLayer {
+    // Generate a new id
+    public static String generateNewCustomerId() {
+        String lastCustomerId = DataLayer.getLastCustomerId().replace("C", "");
+        if (lastCustomerId == null) {
+            return "C001";
+        } else {
+            int maxId = Integer.parseInt(lastCustomerId);
+            maxId = maxId + 1;
+            String id = "";
+            if (maxId < 10) {
+                id = "C00" + maxId;
+            } else if (maxId < 100) {
+                id = "C0" + maxId;
+            } else {
+                id = "C" + maxId;
+            }
+            return id;
+        }
+    }
+
 
     public static List<CustomerTM> getAllCustomers() {
         return DataLayer.getAllCustomers();
@@ -35,8 +53,8 @@ public class BusinessLayer {
         return DataLayer.getAllItems();
     }
 
-    public static boolean saveItem(String code, String description, int unitPrice, int qtyOnHand) {
-        return DataLayer.saveItem(new ItemTM(code, description, unitPrice, qtyOnHand));
+    public static boolean saveItem(String code, String description, int qtyOnHand, double unitPrice) {
+        return DataLayer.saveItem(new ItemTM(code, description, qtyOnHand, unitPrice));
     }
 
     public static boolean deleteItem(String itemCode) {
@@ -44,9 +62,8 @@ public class BusinessLayer {
     }
 
 
-    public static boolean updateItem(String code, String description, int unitPrice,
-                                     int qtyOnHand) {
-        return DataLayer.updateItem(new ItemTM(code, description, unitPrice, qtyOnHand));
+    public static boolean updateItem(String code, String description, int qtyOnHand, double unitPrice) {
+        return DataLayer.updateItem(new ItemTM(code, description, qtyOnHand, unitPrice));
     }
 
     public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails) {

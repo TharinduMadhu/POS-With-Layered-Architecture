@@ -17,7 +17,7 @@ public class ItemTM implements Cloneable{
         this.unitPrice = unitPrice;
     }
 
-    public ItemTM clone(){
+    public ItemTM clone() {
         return new ItemTM(this.code, this.description, this.qtyOnHand, this.unitPrice);
     }
 
