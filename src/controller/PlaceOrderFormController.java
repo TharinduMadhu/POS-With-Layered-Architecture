@@ -1,5 +1,6 @@
 package controller;
 
+import business.BusinessLayer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
@@ -337,7 +338,6 @@ public class PlaceOrderFormController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     @FXML
@@ -370,32 +370,7 @@ public class PlaceOrderFormController {
 
     private void generateOrderId() {
         // Generate a new id
-        int maxId = 0;
-        /*for (Order order : ordersDB) {
-            int id = Integer.parseInt(order.getId().replace("OD", ""));
-            if (id > maxId) {
-                maxId = id;
-            }
-        }*/
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT id FROM `Order` ORDER BY id DESC LIMIT 1");
-            if (rst.next()) {
-                maxId = Integer.parseInt(rst.getString(1).replace("OD",""));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        maxId = maxId + 1;
-        String id = "";
-        if (maxId < 10) {
-            id = "OD00" + maxId;
-        } else if (maxId < 100) {
-            id = "OD0" + maxId;
-        } else {
-            id = "OD" + maxId;
-        }
-        lblId.setText(id);
+       lblId.setText(BusinessLayer.generateNewOrderId());
     }
 
     void initializeWithSearchOrderForm(String orderId) {
