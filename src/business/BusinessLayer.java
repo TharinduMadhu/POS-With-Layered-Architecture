@@ -23,7 +23,8 @@ import java.util.List;
 public class BusinessLayer {
     // Generate a new id
     public static String generateNewCustomerId() {
-        String lastCustomerId = CustomerDAO.getLastCustomerId().replace("C", "");
+        CustomerDAO customerDAO = new CustomerDAO();
+        String lastCustomerId = customerDAO.getLastCustomerId().replace("C", "");
         if (lastCustomerId == null) {
             return "C001";
         } else {
@@ -42,7 +43,8 @@ public class BusinessLayer {
     }
 
     public static String generateNewOrderId() {
-        String lastOrderId = OrderDAO.getLastOrderId().replace("OD", "");
+        OrderDAO orderDAO = new OrderDAO();
+        String lastOrderId = orderDAO.getLastOrderId().replace("OD", "");
         if (lastOrderId == null) {
             return "OD001";
         } else {
@@ -61,12 +63,13 @@ public class BusinessLayer {
     }
 
     public static String getNewItemId() {
-        String lastItemId = ItemDAO.getLastItemdId();
+        ItemDAO itemDAO = new ItemDAO();
+        String lastItemId = itemDAO.getLastItemdId();
         if (lastItemId == null) {
             return "I001";
         } else {
             int maxCode;
-            maxCode = Integer.parseInt(ItemDAO.getLastItemdId().replace("I", ""));
+            maxCode = Integer.parseInt(itemDAO.getLastItemdId().replace("I", ""));
             maxCode = maxCode + 1;
             String code = "";
             if (maxCode < 10) {
@@ -81,7 +84,8 @@ public class BusinessLayer {
     }
 
     public static List<CustomerTM> getAllCustomers() {
-        List<Customer> allCustomers = CustomerDAO.findAllCustomers();
+        CustomerDAO customerDAO = new CustomerDAO();
+        List<Customer> allCustomers = customerDAO.findAllCustomers();
         List<CustomerTM> customers = new ArrayList<>();
         for (Customer customer : allCustomers) {
             customers.add(new CustomerTM(customer.getId(), customer.getName(), customer.getAddress()));
@@ -90,19 +94,23 @@ public class BusinessLayer {
     }
 
     public static boolean saveCustomer(String id, String name, String address) {
-        return CustomerDAO.saveCustomer(new Customer(id, name, address));
+        CustomerDAO customerDAO = new CustomerDAO();
+        return customerDAO.saveCustomer(new Customer(id, name, address));
     }
 
     public static boolean deleteCustomer(String customerId) {
-        return CustomerDAO.deleteCustomer(customerId);
+        CustomerDAO customerDAO = new CustomerDAO();
+        return customerDAO.deleteCustomer(customerId);
     }
 
     public static boolean updateCustomer(String id, String name, String address) {
-        return CustomerDAO.updateCustomer(new Customer(id, name, address));
+        CustomerDAO customerDAO = new CustomerDAO();
+        return customerDAO.updateCustomer(new Customer(id, name, address));
     }
 
     public static List<ItemTM> getAllItems() {
-        List<Item> items = ItemDAO.findAllItems();
+        ItemDAO itemDAO = new ItemDAO();
+        List<Item> items = itemDAO.findAllItems();
         List<ItemTM> allItems = new ArrayList();
         for (Item item : items) {
             allItems.add(new ItemTM(item.getCode(), item.getDescription(),
@@ -112,17 +120,20 @@ public class BusinessLayer {
     }
 
     public static boolean saveItem(String code, String description, int qtyOnHand, double unitPrice) {
-        return ItemDAO.saveItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
+        ItemDAO itemDAO = new ItemDAO();
+        return itemDAO.saveItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
 
 
     public static boolean deleteItem(String itemCode) {
-        return ItemDAO.deleteItem(itemCode);
+        ItemDAO itemDAO = new ItemDAO();
+        return itemDAO.deleteItem(itemCode);
     }
 
 
     public static boolean updateItem(String code, String description, int qtyOnHand, double unitPrice) {
-        return ItemDAO.updateItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
+        ItemDAO itemDAO = new ItemDAO();
+        return itemDAO.updateItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
 
 
@@ -130,7 +141,8 @@ public class BusinessLayer {
         Connection connection = DBConnection.getInstance().getConnection();
         try {
             connection.setAutoCommit(false);
-            boolean result = OrderDAO.saveOrder(new Order(order.getOrderId(),
+            OrderDAO orderDAO = new OrderDAO();
+            boolean result = orderDAO.saveOrder(new Order(order.getOrderId(),
                     Date.valueOf(order.getOrderDate()),
                     order.getCustomerId()));
             if (!result) {
@@ -138,7 +150,8 @@ public class BusinessLayer {
                 return false;
             }
             for (OrderDetailTM orderDetail : orderDetails) {
-                result = OrderDetailDAO.saveOrderDetail(new OrderDetail(
+                OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+                result = orderDetailDAO.saveOrderDetail(new OrderDetail(
                         order.getOrderId(), orderDetail.getCode(),
                         orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
                 ));
@@ -146,9 +159,10 @@ public class BusinessLayer {
                     connection.rollback();
                     return false;
                 }
-                Item item = ItemDAO.findItem(orderDetail.getCode());
+                ItemDAO itemDAO = new ItemDAO();
+                Item item = itemDAO.findItem(orderDetail.getCode());
                 item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
-                result = ItemDAO.updateItem(item);
+                result = itemDAO.updateItem(item);
                 if (!result) {
                     connection.rollback();
                     return false;
