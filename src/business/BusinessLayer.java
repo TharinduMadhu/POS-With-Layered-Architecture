@@ -32,6 +32,45 @@ public class BusinessLayer {
         }
     }
 
+    public static String generateNewOrderId() {
+        String lastOrderId = DataLayer.getLastOrderId().replace("OD", "");
+        if (lastOrderId == null) {
+            return "OD001";
+        } else {
+            int maxId = Integer.parseInt(lastOrderId);
+            maxId = maxId + 1;
+            String id = "";
+            if (maxId < 10) {
+                id = "OD00" + maxId;
+            } else if (maxId < 100) {
+                id = "OD0" + maxId;
+            } else {
+                id = "OD" + maxId;
+            }
+            return id;
+        }
+    }
+
+    public static String getNewItemId() {
+        String lastItemId = DataLayer.getLastItemdId();
+        if (lastItemId == null) {
+            return "I001";
+        } else {
+            int maxCode;
+            maxCode = Integer.parseInt(DataLayer.getLastItemdId().replace("I", ""));
+            maxCode = maxCode + 1;
+            String code = "";
+            if (maxCode < 10) {
+                code = "I00" + maxCode;
+            } else if (maxCode < 100) {
+                code = "I0" + maxCode;
+            } else {
+                code = "I" + maxCode;
+            }
+            return code;
+        }
+    }
+
 
     public static List<CustomerTM> getAllCustomers() {
         return DataLayer.getAllCustomers();
@@ -66,46 +105,34 @@ public class BusinessLayer {
         return DataLayer.updateItem(new ItemTM(code, description, qtyOnHand, unitPrice));
     }
 
-    public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails) {
+
+
+    public static boolean placeOrder(OrderTM order, List<OrderDetailTM> orderDetails){
         Connection connection = DBConnection.getInstance().getConnection();
         try {
             connection.setAutoCommit(false);
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO `Order` VALUES (?,?,?)");
-            pstm.setObject(1, order.getOrderId());
-            pstm.setObject(2, order.getOrderDate());
-            pstm.setObject(3, order.getCustomerId());
-            int affectedRows = pstm.executeUpdate();
 
-            if (affectedRows == 0) {
+            boolean result = DataLayer.saveOrder(order);
+            if (!result){
                 connection.rollback();
                 return false;
             }
 
-            for (OrderDetailTM orderDetail : orderDetails) {
-                pstm = connection.prepareStatement("INSERT INTO OrderDetail VALUES (?,?,?,?)");
-                pstm.setObject(1, order.getOrderId());
-                pstm.setObject(2, orderDetail.getCode());
-                pstm.setObject(3, orderDetail.getQty());
-                pstm.setObject(4, orderDetail.getUnitPrice());
-                affectedRows = pstm.executeUpdate();
-
-                if (affectedRows == 0) {
-                    connection.rollback();
-                    return false;
-                }
-
-                pstm = connection.prepareStatement("UPDATE Item SET qtyOnHand=qtyOnHand-? WHERE code=?");
-                pstm.setObject(1, orderDetail.getQty());
-                pstm.setObject(2, orderDetail.getCode());
-                affectedRows = pstm.executeUpdate();
-
-                if (affectedRows == 0) {
-                    connection.rollback();
-                    return false;
-                }
+            result = DataLayer.saveOrderDetail(order.getOrderId(),orderDetails);
+            if (!result){
+                connection.rollback();
+                return false;
             }
+
+            result = DataLayer.updateQty(orderDetails);
+            if (!result){
+                connection.rollback();
+                return false;
+            }
+
             connection.commit();
             return true;
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             try {
@@ -121,6 +148,7 @@ public class BusinessLayer {
                 throwables.printStackTrace();
             }
         }
-
     }
+
+
 }

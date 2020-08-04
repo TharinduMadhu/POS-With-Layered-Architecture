@@ -193,26 +193,26 @@ public class ManageItemFormController implements Initializable {
         btnSave.setDisable(false);
 
         // Generate a new id
-        int maxCode = 0;
-        try {
-            Statement stm = DBConnection.getInstance().getConnection().createStatement();
-            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
-            if (rst.next()) {
-                maxCode = Integer.parseInt(rst.getString(1).replace("I", ""));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        maxCode = maxCode + 1;
-        String code = "";
-        if (maxCode < 10) {
-            code = "I00" + maxCode;
-        } else if (maxCode < 100) {
-            code = "I0" + maxCode;
-        } else {
-            code = "I" + maxCode;
-        }
-        txtCode.setText(code);
+//        int maxCode = 0;
+//        try {
+//            Statement stm = DBConnection.getInstance().getConnection().createStatement();
+//            ResultSet rst = stm.executeQuery("SELECT code FROM Item ORDER BY code DESC LIMIT 1");
+//            if (rst.next()) {
+//                maxCode = Integer.parseInt(rst.getString(1).replace("I", ""));
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        maxCode = maxCode + 1;
+//        String code = "";
+//        if (maxCode < 10) {
+//            code = "I00" + maxCode;
+//        } else if (maxCode < 100) {
+//            code = "I0" + maxCode;
+//        } else {
+//            code = "I" + maxCode;
+//        }
+        txtCode.setText(BusinessLayer.getNewItemId());
 
     }
 

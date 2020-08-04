@@ -280,40 +280,13 @@ public class PlaceOrderFormController {
         }
 
         // Let's save the order
-        //int orderId = Integer.parseInt(lblId.getText().replace("OD", ""));
-        try {
-            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO `Order` VALUES (?,?,?)");
-            pstm.setObject(1, lblId.getText());
-            pstm.setObject(2, LocalDate.now());
-            pstm.setObject(3, cmbCustomerId.getValue().getId());
-            int affectedRows = pstm.executeUpdate();
-            if (affectedRows == 0) {
+        boolean result = BusinessLayer.placeOrder(new OrderTM(lblId.getText(), LocalDate.now(),
+                cmbCustomerId.getValue().getId(), cmbCustomerId.getValue().getName(),0),
+                tblOrderDetails.getItems());
+            if (!result) {
                 new Alert(Alert.AlertType.ERROR, "Mudalali wade awul wage", ButtonType.OK).show();
                 return;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        ObservableList<OrderDetailTM> olOrderDetails = tblOrderDetails.getItems();
-        try {
-            PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement("INSERT INTO OrderDetail VALUES (?,?,?,?)");
-            for (OrderDetailTM orderDetail : olOrderDetails) {
-                // Let's update the stock
-                updateStockQty(orderDetail.getCode(), orderDetail.getQty());
-                pstm.setObject(1, lblId.getText());
-                pstm.setObject(2, orderDetail.getCode());
-                pstm.setObject(3, orderDetail.getQty());
-                pstm.setObject(4, orderDetail.getUnitPrice());
-                int affectedRows = pstm.executeUpdate();
-                if (affectedRows == 0) {
-                    new Alert(Alert.AlertType.ERROR, "Order Detail Ekak Awul Giya", ButtonType.OK).show();
-                    return;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         new Alert(Alert.AlertType.INFORMATION, "Mudalali wade goda", ButtonType.OK).showAndWait();
 
