@@ -86,4 +86,19 @@ public class OrderDAO {
     }
 
 
+    public static String getLastOrderId() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM `Order` ORDER BY id DESC LIMIT 1");
+            if (!rst.next()) {
+                return null;
+            } else {
+                return rst.getString(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
 }

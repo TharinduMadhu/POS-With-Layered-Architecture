@@ -9,13 +9,13 @@ import java.util.List;
 
 public class CustomerDAO {
 
-    public static List<Customer> findAllCustomers(){
+    public static List<Customer> findAllCustomers() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
             ResultSet rst = stm.executeQuery("SELECT * FROM customer");
             List<Customer> customers = new ArrayList<>();
-            while (rst.next()){
+            while (rst.next()) {
                 customers.add(new Customer(rst.getString(1),
                         rst.getString(2),
                         rst.getString(3)));
@@ -27,25 +27,25 @@ public class CustomerDAO {
         }
     }
 
-    public static Customer findCustomer(String customerId){
-            try {
-                Connection connection = DBConnection.getInstance().getConnection();
-                PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
-                pstm.setObject(1, customerId);
-                ResultSet rst = pstm.executeQuery();
-                if (rst.next()){
-                    return new Customer(rst.getString(1),
-                            rst.getString(2),
-                            rst.getString(3));
-                }
-                return null;
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                return null;
+    public static Customer findCustomer(String customerId) {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
+            pstm.setObject(1, customerId);
+            ResultSet rst = pstm.executeQuery();
+            if (rst.next()) {
+                return new Customer(rst.getString(1),
+                        rst.getString(2),
+                        rst.getString(3));
             }
+            return null;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
         }
+    }
 
-    public static boolean saveCustomer(Customer customer){
+    public static boolean saveCustomer(Customer customer) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
@@ -59,7 +59,7 @@ public class CustomerDAO {
         }
     }
 
-    public static boolean updateCustomer(Customer customer){
+    public static boolean updateCustomer(Customer customer) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
@@ -74,7 +74,7 @@ public class CustomerDAO {
     }
 
 
-    public static boolean deleteCustomer(String customerId){
+    public static boolean deleteCustomer(String customerId) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
@@ -86,14 +86,21 @@ public class CustomerDAO {
         }
     }
 
-
-
-
-
-
-
-
-
+    public static String getLastCustomerId() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM customer ORDER BY id DESC LIMIT 1");
+            if (!rst.next()) {
+                return null;
+            } else {
+                return rst.getString(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
 
 
 }
