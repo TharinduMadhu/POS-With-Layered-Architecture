@@ -1,7 +1,7 @@
 package dao;
 
 public enum DAOType {
-    Customer,Item,Order,OrderDetail
+    Customer,Item,Order,OrderDetail,QueryDAO
 
 
 

@@ -4,10 +4,7 @@ import dao.custom.CustomerDAO;
 import dao.custom.ItemDAO;
 import dao.custom.OrderDAO;
 import dao.custom.OrderDetailDAO;
-import dao.custom.impl.CustomerDAOImpl;
-import dao.custom.impl.ItemDAOImpl;
-import dao.custom.impl.OrderDAOImpl;
-import dao.custom.impl.OrderDetailDAOImpl;
+import dao.custom.impl.*;
 import entity.SuperEntity;
 
 public class DAOFactory {
@@ -20,16 +17,18 @@ public class DAOFactory {
         return (daoFactory == null) ? daoFactory = new DAOFactory() : daoFactory;
     }
 
-    public SuperDAO getDAO(DAOType daoType) {
+    public <T extends SuperDAO> T getDAO(DAOType daoType) {
         switch (daoType) {
             case Customer:
-                return new CustomerDAOImpl();
+                return (T) new CustomerDAOImpl();
             case Item:
-                return new ItemDAOImpl();
+                return (T) new ItemDAOImpl();
             case Order:
-                return new OrderDAOImpl();
+                return (T) new OrderDAOImpl();
             case OrderDetail:
-                return new OrderDetailDAOImpl();
+                return (T) new OrderDetailDAOImpl();
+            case QueryDAO:
+                return (T) new QueryDAOImpl();
             default:
                 return null;
         }
