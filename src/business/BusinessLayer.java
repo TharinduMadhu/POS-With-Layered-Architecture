@@ -1,10 +1,13 @@
 package business;
 
-import dao.*;
-import dao.impl.CustomerDAOImpl;
-import dao.impl.ItemDAOImpl;
-import dao.impl.OrderDAOImpl;
-import dao.impl.OrderDetailDAOImpl;
+import dao.custom.CustomerDAO;
+import dao.custom.ItemDAO;
+import dao.custom.OrderDAO;
+import dao.custom.OrderDetailDAO;
+import dao.custom.impl.CustomerDAOImpl;
+import dao.custom.impl.ItemDAOImpl;
+import dao.custom.impl.OrderDAOImpl;
+import dao.custom.impl.OrderDetailDAOImpl;
 import db.DBConnection;
 import entity.Customer;
 import entity.Item;
@@ -83,7 +86,7 @@ public class BusinessLayer {
         }
     }
 
-    public static List<CustomerDAOImpl> getAllCustomers() {
+    public static List<CustomerTM> getAllCustomers() {
          CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
         List<Customer> allCustomers = customerDAOImpl.findAll();
         List<CustomerTM> customers = new ArrayList<>();
@@ -101,7 +104,7 @@ public class BusinessLayer {
 
     public static boolean deleteCustomer(String customerId) {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();
-        return customerDAOImpl.(customerId);
+        return customerDAOImpl.delete(customerId);
     }
 
     public static boolean updateCustomer(String id, String name, String address) {
@@ -111,7 +114,7 @@ public class BusinessLayer {
 
     public static List<ItemTM> getAllItems() {
         ItemDAO itemDAOImpl = new ItemDAOImpl();
-        List<Item> items = itemDAOImpl.findAllItems();
+        List<Item> items = itemDAOImpl.findAll();
         List<ItemTM> allItems = new ArrayList();
         for (Item item : items) {
             allItems.add(new ItemTM(item.getCode(), item.getDescription(),
@@ -122,19 +125,19 @@ public class BusinessLayer {
 
     public static boolean saveItem(String code, String description, int qtyOnHand, double unitPrice) {
         ItemDAO itemDAOImpl = new ItemDAOImpl();
-        return itemDAOImpl.saveItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
+        return itemDAOImpl.save(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
 
 
     public static boolean deleteItem(String itemCode) {
         ItemDAO itemDAOImpl = new ItemDAOImpl();
-        return itemDAOImpl.deleteItem(itemCode);
+        return itemDAOImpl.delete(itemCode);
     }
 
 
     public static boolean updateItem(String code, String description, int qtyOnHand, double unitPrice) {
         ItemDAO itemDAOImpl = new ItemDAOImpl();
-        return itemDAOImpl.updateItem(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
+        return itemDAOImpl.update(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
 
 
@@ -143,7 +146,7 @@ public class BusinessLayer {
         try {
             connection.setAutoCommit(false);
             OrderDAO orderDAOImpl = new OrderDAOImpl();
-            boolean result = orderDAOImpl.saveOrder(new Order(order.getOrderId(),
+            boolean result = orderDAOImpl.save(new Order(order.getOrderId(),
                     Date.valueOf(order.getOrderDate()),
                     order.getCustomerId()));
             if (!result) {
@@ -152,7 +155,7 @@ public class BusinessLayer {
             }
             for (OrderDetailTM orderDetail : orderDetails) {
                 OrderDetailDAO orderDetailDAOImpl = new OrderDetailDAOImpl();
-                result = orderDetailDAOImpl.saveOrderDetail(new OrderDetail(
+                result = orderDetailDAOImpl.save(new OrderDetail(
                         order.getOrderId(), orderDetail.getCode(),
                         orderDetail.getQty(), BigDecimal.valueOf(orderDetail.getUnitPrice())
                 ));
@@ -161,9 +164,9 @@ public class BusinessLayer {
                     return false;
                 }
                 ItemDAO itemDAOImpl = new ItemDAOImpl();
-                Item item = itemDAOImpl.findItem(orderDetail.getCode());
+                Item item = itemDAOImpl.find(orderDetail.getCode());
                 item.setQtyOnHand(item.getQtyOnHand() - orderDetail.getQty());
-                result = itemDAOImpl.updateItem(item);
+                result = itemDAOImpl.update(item);
                 if (!result) {
                     connection.rollback();
                     return false;

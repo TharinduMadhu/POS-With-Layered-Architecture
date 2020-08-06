@@ -1,21 +1,21 @@
-package dao.impl;
+package dao.custom.impl;
 
-import dao.ItemDAO;
+import dao.custom.CustomerDAO;
 import db.DBConnection;
-import entity.Item;
+import entity.Customer;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemDAOImpl implements ItemDAO {
+public class CustomerDAOImpl implements CustomerDAO {
 
-
-    public String getLastItemId() {
+    @Override
+    public String getLastCustomerId() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Item ORDER BY code DESC LIMIT 1");
+            ResultSet rst = stm.executeQuery("SELECT * FROM customer ORDER BY id DESC LIMIT 1");
             if (!rst.next()) {
                 return null;
             } else {
@@ -29,19 +29,20 @@ public class ItemDAOImpl implements ItemDAO {
 
 
     @Override
-    public List<Item> findAll() {
+    public List<Customer> findAll() {
         try {
+
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM item");
-            List<Item> items = new ArrayList<>();
+            ResultSet rst = stm.executeQuery("SELECT * FROM customer");
+            List<Customer> customers = new ArrayList<>();
             while (rst.next()) {
-                items.add(new Item(rst.getString(1),
+                customers.add(new Customer(rst.getString(1),
                         rst.getString(2),
-                        rst.getBigDecimal(3),
-                        rst.getInt(4)));
+                        rst.getString(3)));
             }
-            return items;
+            return customers;
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;
@@ -49,17 +50,16 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public Item find(String key) {
+    public Customer find(String key) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Item WHERE code=?");
+            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
             pstm.setObject(1, key);
             ResultSet rst = pstm.executeQuery();
             if (rst.next()) {
-                return new Item(rst.getString(1),
+                return new Customer(rst.getString(1),
                         rst.getString(2),
-                        rst.getBigDecimal(3),
-                        rst.getInt(4));
+                        rst.getString(3));
             }
             return null;
         } catch (SQLException throwables) {
@@ -68,15 +68,15 @@ public class ItemDAOImpl implements ItemDAO {
         }
     }
 
+
     @Override
-    public boolean save(Item item) {
+    public boolean update(Customer customer) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
-            pstm.setObject(1, item.getCode());
-            pstm.setObject(2, item.getDescription());
-            pstm.setObject(3, item.getUnitPrice());
-            pstm.setObject(4, item.getQtyOnHand());
+            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
+            pstm.setObject(3, customer.getId());
+            pstm.setObject(1, customer.getName());
+            pstm.setObject(2, customer.getAddress());
             return pstm.executeUpdate() > 0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -85,32 +85,36 @@ public class ItemDAOImpl implements ItemDAO {
     }
 
     @Override
-    public boolean update(Item item) {
+    public boolean delete(String key) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
-            pstm.setObject(4, item.getCode());
-            pstm.setObject(1, item.getDescription());
-            pstm.setObject(2, item.getUnitPrice());
-            pstm.setObject(3, item.getQtyOnHand());
+            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
+            pstm.setObject(1, key);
             return pstm.executeUpdate() > 0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
         }
-
     }
 
     @Override
-    public boolean delete(String itemCode) {
+    public boolean save(Customer customer) {
         try {
+            Customer customer1 = new Customer();
+            customer1 = (Customer) customer;
             Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE code=?");
-            pstm.setObject(1, itemCode);
+            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
+            pstm.setObject(1, customer.getId());
+            pstm.setObject(2, customer.getName());
+            pstm.setObject(3, customer.getAddress());
             return pstm.executeUpdate() > 0;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
         }
     }
+
+
 }
+
+

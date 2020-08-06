@@ -1,6 +1,6 @@
-package dao.impl;
+package dao.custom.impl;
 
-import dao.OrderDetailDAO;
+import dao.custom.OrderDetailDAO;
 import db.DBConnection;
 import entity.OrderDetail;
 import entity.OrderDetailPK;

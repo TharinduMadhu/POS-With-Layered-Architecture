@@ -1,5 +1,6 @@
-package dao;
+package dao.custom;
 
+import dao.SuperDAO;
 import entity.OrderDetail;
 import entity.OrderDetailPK;
 
