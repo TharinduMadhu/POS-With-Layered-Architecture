@@ -21,13 +21,13 @@ public class DAOFactory {
 
     public SuperDAO getDAO (int daoType){
         switch (daoType){
-            case 0 :
-                return new CustomerDAOImpl();
             case 1 :
+                return new CustomerDAOImpl();
+            case 2 :
                 return new ItemDAOImpl();
-            case 2:
+            case 3:
                 return new OrderDAOImpl();
-            case 3 :
+            case 4:
                 return new OrderDetailDAOImpl();
             default:
                 return null;
