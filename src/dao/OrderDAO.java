@@ -4,16 +4,9 @@ import entity.Order;
 
 import java.util.List;
 
-public interface OrderDAO {
+public interface OrderDAO extends SuperDAO <Order,String>{
     String getLastOrderId();
 
-    boolean deleteOrder(String orderId);
 
-    boolean updateOrder(Order order);
-
-    boolean saveOrder(Order order);
-    Order findOrder(String orderId);
-
-    List<Order> findAllOrders();
 
 }

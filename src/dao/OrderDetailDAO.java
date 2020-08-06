@@ -5,16 +5,17 @@ import entity.OrderDetailPK;
 
 import java.util.List;
 
-public interface OrderDetailDAO {
-    List<OrderDetail> findAllOrderDetails();
+public interface OrderDetailDAO extends SuperDAO<OrderDetail,OrderDetailPK> {
 
-    OrderDetail findOrderDetail(OrderDetailPK orderDetailPK);
+//    List<OrderDetail> findAllOrderDetails();
+//
+//    OrderDetail findOrderDetail(OrderDetailPK orderDetailPK);
 
-    boolean saveOrderDetail(OrderDetail orderDetail);
+  //  boolean saveOrderDetail(OrderDetail orderDetail);
 
-    boolean updateOrderDetail(OrderDetail orderDetail);
-
-    boolean deleteOrderDetail(OrderDetailPK orderDetailPK);
+//    boolean updateOrderDetail(OrderDetail orderDetail);
+//
+//    boolean deleteOrderDetail(OrderDetailPK orderDetailPK);
 
 
 

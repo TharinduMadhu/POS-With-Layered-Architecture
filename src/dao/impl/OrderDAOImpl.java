@@ -10,7 +10,25 @@ import java.util.List;
 
 public class OrderDAOImpl implements OrderDAO {
 
-    public  List<Order> findAllOrders() {
+
+    public String getLastOrderId() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM `Order` ORDER BY id DESC LIMIT 1");
+            if (!rst.next()) {
+                return null;
+            } else {
+                return rst.getString(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Order> findAll() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -28,7 +46,8 @@ public class OrderDAOImpl implements OrderDAO {
         }
     }
 
-    public  Order findOrder(String orderId) {
+    @Override
+    public Order find(String orderId) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM `Order` WHERE id=?");
@@ -46,7 +65,8 @@ public class OrderDAOImpl implements OrderDAO {
         }
     }
 
-    public  boolean saveOrder(Order order) {
+    @Override
+    public boolean save(Order order) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO `Order` VALUES (?,?,?)");
@@ -58,9 +78,11 @@ public class OrderDAOImpl implements OrderDAO {
             throwables.printStackTrace();
             return false;
         }
+
     }
 
-    public  boolean updateOrder(Order order) {
+    @Override
+    public boolean update(Order order) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE Order SET date=?, customerId=? WHERE id=?");
@@ -74,7 +96,8 @@ public class OrderDAOImpl implements OrderDAO {
         }
     }
 
-    public  boolean deleteOrder(String orderId) {
+    @Override
+    public boolean delete(String orderId) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Order WHERE id=?");
@@ -83,23 +106,6 @@ public class OrderDAOImpl implements OrderDAO {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;
-        }
-    }
-
-
-    public  String getLastOrderId() {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM `Order` ORDER BY id DESC LIMIT 1");
-            if (!rst.next()) {
-                return null;
-            } else {
-                return rst.getString(1);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
         }
     }
 }

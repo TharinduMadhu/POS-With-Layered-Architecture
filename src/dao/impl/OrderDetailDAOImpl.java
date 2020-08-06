@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDetailDAOImpl implements OrderDetailDAO {
-
-    public  List<OrderDetail> findAllOrderDetails() {
+    @Override
+    public List<OrderDetail> findAll() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -30,7 +30,8 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public  OrderDetail findOrderDetail(OrderDetailPK orderDetailPK) {
+    @Override
+    public OrderDetail find(OrderDetailPK orderDetailPK) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM `OrderDetail` WHERE orderId=? AND itemCode=?");
@@ -50,7 +51,8 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public  boolean saveOrderDetail(OrderDetail orderDetail) {
+    @Override
+    public boolean save(OrderDetail orderDetail) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO `OrderDetail` VALUES (?,?,?,?)");
@@ -65,22 +67,23 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
         }
     }
 
-    public  boolean updateOrderDetail(OrderDetail orderDetail) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("UPDATE OrderDetail SET qty=?, unitPrice=? WHERE orderId=? AND itemCode=?");
-            pstm.setObject(3, orderDetail.getOrderDetailPK().getOrderId());
-            pstm.setObject(4, orderDetail.getOrderDetailPK().getItemCode());
-            pstm.setObject(1, orderDetail.getQty());
-            pstm.setObject(2, orderDetail.getUnitPrice());
-            return pstm.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return false;
-        }
+    @Override
+    public boolean update(OrderDetail orderDetail) {try {
+        Connection connection = DBConnection.getInstance().getConnection();
+        PreparedStatement pstm = connection.prepareStatement("UPDATE OrderDetail SET qty=?, unitPrice=? WHERE orderId=? AND itemCode=?");
+        pstm.setObject(3, orderDetail.getOrderDetailPK().getOrderId());
+        pstm.setObject(4, orderDetail.getOrderDetailPK().getItemCode());
+        pstm.setObject(1, orderDetail.getQty());
+        pstm.setObject(2, orderDetail.getUnitPrice());
+        return pstm.executeUpdate() > 0;
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
+        return false;
+    }
     }
 
-    public  boolean deleteOrderDetail(OrderDetailPK orderDetailPK) {
+    @Override
+    public boolean delete(OrderDetailPK orderDetailPK) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.
@@ -93,6 +96,4 @@ public class OrderDetailDAOImpl implements OrderDetailDAO {
             return false;
         }
     }
-
-
 }

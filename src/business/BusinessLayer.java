@@ -86,9 +86,9 @@ public class BusinessLayer {
         }
     }
 
-    public static List<CustomerTM> getAllCustomers() {
+    public static List<Object> getAllCustomers() {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();
-        List<Customer> allCustomers = customerDAOImpl.findAllCustomers();
+        List<Customer> allCustomers = customerDAOImpl.findAll();
         List<CustomerTM> customers = new ArrayList<>();
         for (Customer customer : allCustomers) {
             customers.add(new CustomerTM(customer.getId(), customer.getName(), customer.getAddress()));
@@ -98,17 +98,17 @@ public class BusinessLayer {
 
     public static boolean saveCustomer(String id, String name, String address) {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();
-        return customerDAOImpl.saveCustomer(new Customer(id, name, address));
+        return customerDAOImpl.save(new Customer(id, name, address));
     }
 
     public static boolean deleteCustomer(String customerId) {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();
-        return customerDAOImpl.deleteCustomer(customerId);
+        return customerDAOImpl.(customerId);
     }
 
     public static boolean updateCustomer(String id, String name, String address) {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();
-        return customerDAOImpl.updateCustomer(new Customer(id, name, address));
+        return customerDAOImpl.update(new Customer(id, name, address));
     }
 
     public static List<ItemTM> getAllItems() {

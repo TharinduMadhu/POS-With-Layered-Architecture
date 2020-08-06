@@ -9,7 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDAOImpl implements ItemDAO {
-    public  List<Item> findAllItems() {
+
+
+    public String getLastItemId() {
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM Item ORDER BY code DESC LIMIT 1");
+            if (!rst.next()) {
+                return null;
+            } else {
+                return rst.getString(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+
+    @Override
+    public List<Item> findAll() {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             Statement stm = connection.createStatement();
@@ -28,11 +48,12 @@ public class ItemDAOImpl implements ItemDAO {
         }
     }
 
-    public  Item findItem(String itemCode) {
+    @Override
+    public Item find(String key) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Item WHERE code=?");
-            pstm.setObject(1, itemCode);
+            pstm.setObject(1, key);
             ResultSet rst = pstm.executeQuery();
             if (rst.next()) {
                 return new Item(rst.getString(1),
@@ -47,7 +68,8 @@ public class ItemDAOImpl implements ItemDAO {
         }
     }
 
-    public  boolean saveItem(Item item) {
+    @Override
+    public boolean save(Item item) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("INSERT INTO Item VALUES (?,?,?,?)");
@@ -62,7 +84,8 @@ public class ItemDAOImpl implements ItemDAO {
         }
     }
 
-    public  boolean updateItem(Item item) {
+    @Override
+    public boolean update(Item item) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?");
@@ -75,9 +98,11 @@ public class ItemDAOImpl implements ItemDAO {
             throwables.printStackTrace();
             return false;
         }
+
     }
 
-    public  boolean deleteItem(String itemCode) {
+    @Override
+    public boolean delete(String itemCode) {
         try {
             Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement pstm = connection.prepareStatement("DELETE FROM Item WHERE code=?");
@@ -88,20 +113,4 @@ public class ItemDAOImpl implements ItemDAO {
             return false;
         }
     }
-
-    public  String getLastItemId() {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Item ORDER BY code DESC LIMIT 1");
-            if (!rst.next()){
-                return null;
-            }else{
-                return rst.getString(1);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-    }
+}
