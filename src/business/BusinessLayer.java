@@ -1,9 +1,6 @@
 package business;
 
-import dao.CustomerDAO;
-import dao.ItemDAO;
-import dao.OrderDAO;
-import dao.OrderDetailDAO;
+import dao.*;
 import dao.impl.CustomerDAOImpl;
 import dao.impl.ItemDAOImpl;
 import dao.impl.OrderDAOImpl;
@@ -86,8 +83,8 @@ public class BusinessLayer {
         }
     }
 
-    public static List<Object> getAllCustomers() {
-        CustomerDAO customerDAOImpl = new CustomerDAOImpl();
+    public static List<CustomerDAOImpl> getAllCustomers() {
+         CustomerDAOImpl customerDAOImpl = new CustomerDAOImpl();
         List<Customer> allCustomers = customerDAOImpl.findAll();
         List<CustomerTM> customers = new ArrayList<>();
         for (Customer customer : allCustomers) {
@@ -95,6 +92,7 @@ public class BusinessLayer {
         }
         return customers;
     }
+
 
     public static boolean saveCustomer(String id, String name, String address) {
         CustomerDAO customerDAOImpl = new CustomerDAOImpl();

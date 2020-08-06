@@ -1,9 +1,11 @@
 package dao;
 
 
-import java.util.List;
+import entity.SuperEntity;
 
-public interface SuperDAO<T,ID> {
+import java.util.List;
+//public static  <T extends Comparable>void sort(T[] se)
+public interface   SuperDAO <T extends SuperEntity,ID> {
 
     List<T> findAll();
 
