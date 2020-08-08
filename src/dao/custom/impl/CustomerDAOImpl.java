@@ -27,7 +27,6 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
     }
 
-
     @Override
     public List<Customer> findAll() {
         try {
@@ -42,13 +41,11 @@ public class CustomerDAOImpl implements CustomerDAO {
                         rst.getString(3)));
             }
             return customers;
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;
         }
     }
-
     @Override
     public Customer find(String key) {
         try {
