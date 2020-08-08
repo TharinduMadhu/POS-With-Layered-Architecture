@@ -14,7 +14,7 @@ public class CrudUtilTest {
 //        params1.add("gh");
 //        params1.add("kj");
 
-        boolean result = CrudUtil.executeUpdate("INSERT INTO  item VALUES (code=?,description=?,qtyOnHand=?,unitPrice=?)","I011","Pelwatte","124",450.0);
+        boolean result = CrudUtil.execute("INSERT INTO  item VALUES (code=?,description=?,qtyOnHand=?,unitPrice=?)","I011","Pelwatte","124",450.0);
         System.out.println(result);
 
 //        ArrayList<String> params2 = new ArrayList<>();

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class CrudUtil {
 
-    public static boolean executeUpdate(String sql,Object... param) throws SQLException {
+    public static <T> T execute(String sql,Object... param) throws SQLException {
         Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
         int i = 0;
@@ -18,8 +18,37 @@ public class CrudUtil {
             i++;
             pstm.setObject(i, param);
         }
-        return pstm.executeUpdate() > 0;
+        if (sql.startsWith("SELECT")){
+            return (T) pstm.executeQuery();
+        }
+        return (T) ( (Boolean)(pstm.executeUpdate() > 0));
     }
+
+
+
+//    public static boolean executeUpdate(String sql,Object... param) throws SQLException {
+//        Connection connection = DBConnection.getInstance().getConnection();
+//        PreparedStatement pstm = connection.prepareStatement(sql);
+//        int i = 0;
+//        for (Object  pars : param) {
+//            i++;
+//            pstm.setObject(i, param);
+//        }
+//        return pstm.executeUpdate() > 0;
+//    }
+
+//    public static ResultSet executeQuery(String sql,Object... param) throws SQLException {
+//        Connection connection = DBConnection.getInstance().getConnection();
+//        PreparedStatement pstm = connection.prepareStatement(sql);
+//        int i = 0;
+//        for (Object  pars : param) {
+//            i++;
+//            pstm.setObject(i, param);
+//        }
+//        return pstm.executeQuery();
+//    }
+
+
 
 
 //    public static boolean executeUpdate(String sql, ArrayList<String> param) throws SQLException {
