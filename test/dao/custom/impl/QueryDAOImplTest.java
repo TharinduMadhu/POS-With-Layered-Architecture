@@ -13,8 +13,14 @@ public class QueryDAOImplTest {
     public static void main(String[] args) throws Exception {
 
         QueryDAO queryDAO = DAOFactory.getInstance().getDAO(DAOType.Query);
-        CustomEntity list = queryDAO.getOrderDetail("OD007");
+        List<CustomEntity> list = queryDAO.getOrderDetail3("OD002");
         System.out.println(list);
+
+
+
+
+
+
 
     }
 

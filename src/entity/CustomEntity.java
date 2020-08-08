@@ -1,5 +1,6 @@
 package entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class CustomEntity implements SuperEntity{
@@ -7,18 +8,19 @@ public class CustomEntity implements SuperEntity{
     private String orderId;
     private String customerName;
     private Date orderDate;
+    private BigDecimal total;
 
     public CustomEntity() {
     }
 
-    @Override
-    public String toString() {
-        return "CustomEntity{" +
-                "orderId='" + orderId + '\'' +
-                ", customerName='" + customerName + '\'' +
-                ", orderDate=" + orderDate +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "CustomEntity{" +
+//                "orderId='" + orderId + '\'' +
+//                ", customerName='" + customerName + '\'' +
+//                ", orderDate=" + orderDate +
+//                '}';
+//    }
 
     //Constructor depends on the join query
     //No of constructors equals to the no of join queries
@@ -33,6 +35,17 @@ public class CustomEntity implements SuperEntity{
         this.orderId = orderId;
         this.customerName = customerName;
         this.orderDate = orderDate;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomEntity{" +
+                "customerId='" + customerId + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", customerName='" + customerName + '\'' +
+                ", orderDate=" + orderDate +
+                ", total=" + total +
+                '}';
     }
 
 
@@ -73,16 +86,14 @@ public class CustomEntity implements SuperEntity{
         this.orderDate = orderDate;
     }
 
+    public CustomEntity(String orderId, Date orderDate, String customerId, String customerName, BigDecimal total) {
+        this.customerId = customerId;
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.orderDate = orderDate;
+        this.total = total;
+    }
 
 
 
-//    @Override
-//    public String toString() {
-//        return "Custom{" +
-//                "customerId='" + customerId + '\'' +
-//                ", orderId='" + orderId + '\'' +
-//                ", customerName='" + customerName + '\'' +
-//                ", orderDate=" + orderDate +
-//                '}';
-    //}
 }
