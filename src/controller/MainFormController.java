@@ -30,8 +30,8 @@ import java.util.ResourceBundle;
  *
  * @author ranjith-suranga
  */
-public class MainFormController implements Initializable { 
-    
+public class MainFormController implements Initializable {
+
     @FXML
     private AnchorPane root;
     @FXML
@@ -48,7 +48,6 @@ public class MainFormController implements Initializable {
     private Label lblDescription;
 
 
-
     /**
      * Initializes the controller class.
      */
@@ -57,17 +56,17 @@ public class MainFormController implements Initializable {
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
         fadeIn.play();
-    }    
+    }
 
     @FXML
     private void playMouseExitAnimation(MouseEvent event) {
-        if (event.getSource() instanceof ImageView){
+        if (event.getSource() instanceof ImageView) {
             ImageView icon = (ImageView) event.getSource();
-            ScaleTransition scaleT =new ScaleTransition(Duration.millis(200), icon);
+            ScaleTransition scaleT = new ScaleTransition(Duration.millis(200), icon);
             scaleT.setToX(1);
             scaleT.setToY(1);
-            scaleT.play(); 
-            
+            scaleT.play();
+
             icon.setEffect(null);
             lblMenu.setText("Welcome");
             lblDescription.setText("Please select one of above main operations to proceed");
@@ -76,10 +75,10 @@ public class MainFormController implements Initializable {
 
     @FXML
     private void playMouseEnterAnimation(MouseEvent event) {
-        if (event.getSource() instanceof ImageView){
+        if (event.getSource() instanceof ImageView) {
             ImageView icon = (ImageView) event.getSource();
-            
-            switch(icon.getId()){
+
+            switch (icon.getId()) {
                 case "imgCustomer":
                     lblMenu.setText("Manage Customers");
                     lblDescription.setText("Click to add, edit, delete, search or view customers");
@@ -97,30 +96,30 @@ public class MainFormController implements Initializable {
                     lblDescription.setText("Click if you want to search orders");
                     break;
             }
-            
-            ScaleTransition scaleT =new ScaleTransition(Duration.millis(200), icon);
+
+            ScaleTransition scaleT = new ScaleTransition(Duration.millis(200), icon);
             scaleT.setToX(1.2);
             scaleT.setToY(1.2);
-            scaleT.play(); 
-            
+            scaleT.play();
+
             DropShadow glow = new DropShadow();
             glow.setColor(Color.CORNFLOWERBLUE);
             glow.setWidth(20);
             glow.setHeight(20);
             glow.setRadius(20);
-            icon.setEffect(glow);            
+            icon.setEffect(glow);
         }
-    }  
-    
-    
-@FXML
+    }
+
+
+    @FXML
     private void navigate(MouseEvent event) throws IOException {
-        if (event.getSource() instanceof ImageView){
+        if (event.getSource() instanceof ImageView) {
             ImageView icon = (ImageView) event.getSource();
-            
+
             Parent root = null;
-            
-            switch(icon.getId()){
+
+            switch (icon.getId()) {
                 case "imgCustomer":
                     root = FXMLLoader.load(this.getClass().getResource("/view/ManageCustomerForm.fxml"));
                     break;
@@ -134,20 +133,20 @@ public class MainFormController implements Initializable {
                     root = FXMLLoader.load(this.getClass().getResource("/view/SearchOrdersForm.fxml"));
                     break;
             }
-            
-            if (root != null){
+
+            if (root != null) {
                 Scene subScene = new Scene(root);
                 Stage primaryStage = (Stage) this.root.getScene().getWindow();
                 primaryStage.setScene(subScene);
                 primaryStage.centerOnScreen();
-                
+
                 TranslateTransition tt = new TranslateTransition(Duration.millis(350), subScene.getRoot());
                 tt.setFromX(-subScene.getWidth());
                 tt.setToX(0);
                 tt.play();
-                
+
             }
         }
-    }   
-    
+    }
+
 }
