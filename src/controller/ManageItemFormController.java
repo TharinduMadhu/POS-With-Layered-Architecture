@@ -64,7 +64,11 @@ public class ManageItemFormController implements Initializable {
         btnDelete.setDisable(true);
         btnSave.setDisable(true);
 
-        loadAllItems();
+        try {
+            loadAllItems();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tblItems.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ItemTM>() {
             @Override
@@ -96,7 +100,7 @@ public class ManageItemFormController implements Initializable {
         });
     }
 
-    private void loadAllItems() {
+    private void loadAllItems() throws Exception {
         ObservableList<ItemTM> items = tblItems.getItems();
         items.clear();
         items.addAll(FXCollections.observableArrayList(BusinessLayer.getAllItems()));
@@ -113,7 +117,7 @@ public class ManageItemFormController implements Initializable {
     }
 
     @FXML
-    private void btnSave_OnAction(ActionEvent event) {
+    private void btnSave_OnAction(ActionEvent event) throws Exception {
         if (txtDescription.getText().trim().isEmpty() ||
                 txtQtyOnHand.getText().trim().isEmpty() ||
                 txtUnitPrice.getText().trim().isEmpty()) {
@@ -151,7 +155,7 @@ public class ManageItemFormController implements Initializable {
 
 
     @FXML
-    private void btnDelete_OnAction(ActionEvent event) {
+    private void btnDelete_OnAction(ActionEvent event) throws Exception {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Are you sure whether you want to delete this item?",
                 ButtonType.YES, ButtonType.NO);
@@ -172,7 +176,7 @@ public class ManageItemFormController implements Initializable {
         }
 
     @FXML
-    private void btnAddNew_OnAction(ActionEvent actionEvent) {
+    private void btnAddNew_OnAction(ActionEvent actionEvent) throws Exception {
         txtCode.clear();
         txtDescription.clear();
         txtQtyOnHand.clear();

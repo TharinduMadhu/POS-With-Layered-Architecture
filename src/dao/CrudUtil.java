@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class CrudUtil {
 
-    public static <T extends Boolean & ResultSet> T execute(String sql,Object... param) throws SQLException {
+    public static <T extends Boolean & ResultSet > T execute(String sql,Object... param) throws Exception {
         Connection connection = DBConnection.getInstance().getConnection();
         PreparedStatement pstm = connection.prepareStatement(sql);
         int i = 0;

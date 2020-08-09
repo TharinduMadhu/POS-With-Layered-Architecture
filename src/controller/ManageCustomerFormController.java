@@ -68,7 +68,11 @@ public class ManageCustomerFormController implements Initializable {
         btnDelete.setDisable(true);
         btnSave.setDisable(true);
 
-        loadAllCustomers();
+        try {
+            loadAllCustomers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         tblCustomers.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CustomerTM>() {
             @Override
@@ -96,7 +100,7 @@ public class ManageCustomerFormController implements Initializable {
         });
     }
 
-    private void loadAllCustomers() {
+    private void loadAllCustomers() throws Exception {
 //        try {
         ObservableList<CustomerTM> customers = tblCustomers.getItems();
         customers.clear();
@@ -114,7 +118,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnSave_OnAction(ActionEvent event) {
+    private void btnSave_OnAction(ActionEvent event) throws Exception {
         String name = txtCustomerName.getText();
         String address = txtCustomerAddress.getText();
         String id = txtCustomerId.getText();
@@ -141,7 +145,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnDelete_OnAction(ActionEvent event) {
+    private void btnDelete_OnAction(ActionEvent event) throws Exception {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Are you sure whether you want to delete this customer?",
                 ButtonType.YES, ButtonType.NO);
@@ -160,7 +164,7 @@ public class ManageCustomerFormController implements Initializable {
     }
 
     @FXML
-    private void btnAddNew_OnAction(ActionEvent actionEvent) {
+    private void btnAddNew_OnAction(ActionEvent actionEvent) throws SQLException {
         txtCustomerId.clear();
         txtCustomerName.clear();
         txtCustomerAddress.clear();

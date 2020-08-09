@@ -52,7 +52,7 @@ public class PlaceOrderFormController {
     public TableView<OrderDetailTM> tblOrderDetails;
     private boolean readOnly;
 
-    public void initialize() {
+    public void initialize() throws Exception {
 
         readOnly = false;
 
@@ -265,7 +265,7 @@ public class PlaceOrderFormController {
         }
     }
 
-    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) {
+    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) throws Exception {
         // Validation
         if (cmbCustomerId.getSelectionModel().getSelectedIndex() == -1) {
             new Alert(Alert.AlertType.ERROR, "You need to select a customer", ButtonType.OK).show();
@@ -341,7 +341,7 @@ public class PlaceOrderFormController {
         lblTotal.setText("Total: " + formattedText);
     }
 
-    private void generateOrderId() {
+    private void generateOrderId() throws Exception {
         // Generate a new id
        lblId.setText(BusinessLayer.generateNewOrderId());
     }

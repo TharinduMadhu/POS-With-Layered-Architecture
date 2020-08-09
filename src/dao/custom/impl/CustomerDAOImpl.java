@@ -1,5 +1,6 @@
 package dao.custom.impl;
 
+import dao.CrudUtil;
 import dao.custom.CustomerDAO;
 import db.DBConnection;
 import entity.Customer;
@@ -11,29 +12,18 @@ import java.util.List;
 public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
-    public String getLastCustomerId() {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM customer ORDER BY id DESC LIMIT 1");
+    public String getLastCustomerId() throws Exception {
+            ResultSet  rst  = CrudUtil.execute("SELECT * FROM customer ORDER BY id DESC LIMIT 1");
             if (!rst.next()) {
                 return null;
             } else {
                 return rst.getString(1);
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
         }
-    }
 
     @Override
-    public List<Customer> findAll() {
-        try {
-
-            Connection connection = DBConnection.getInstance().getConnection();
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM customer");
+    public List<Customer> findAll() throws Exception {
+            ResultSet rst=CrudUtil.execute("SELECT * FROM customer");
             List<Customer> customers = new ArrayList<>();
             while (rst.next()) {
                 customers.add(new Customer(rst.getString(1),
@@ -41,74 +31,34 @@ public class CustomerDAOImpl implements CustomerDAO {
                         rst.getString(3)));
             }
             return customers;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
         }
-    }
+
     @Override
-    public Customer find(String key) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
-            pstm.setObject(1, key);
-            ResultSet rst = pstm.executeQuery();
+    public Customer find(String key) throws Exception {
+            ResultSet rst =CrudUtil.execute("SELECT * FROM Customer WHERE id=?", key) ;
             if (rst.next()) {
                 return new Customer(rst.getString(1),
                         rst.getString(2),
                         rst.getString(3));
             }
             return null;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
         }
-    }
 
 
     @Override
-    public boolean update(Customer customer) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("UPDATE Customer SET name=?, address=? WHERE id=?");
-            pstm.setObject(3, customer.getId());
-            pstm.setObject(1, customer.getName());
-            pstm.setObject(2, customer.getAddress());
-            return pstm.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return false;
-        }
+    public boolean update(Customer customer) throws Exception {
+            return CrudUtil.execute("UPDATE Customer SET name=?, address=? WHERE id=?",customer.getName(),customer.getAddress(),customer.getId());
     }
 
     @Override
-    public boolean delete(String key) {
-        try {
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("DELETE FROM Customer WHERE id=?");
-            pstm.setObject(1, key);
-            return pstm.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return false;
+    public boolean delete(String key) throws Exception {
+            return CrudUtil.execute("DELETE FROM Customer WHERE id=?", key);
         }
-    }
+
 
     @Override
-    public boolean save(Customer customer) {
-        try {
-            Customer customer1 = new Customer();
-            customer1 = (Customer) customer;
-            Connection connection = DBConnection.getInstance().getConnection();
-            PreparedStatement pstm = connection.prepareStatement("INSERT INTO Customer VALUES (?,?,?)");
-            pstm.setObject(1, customer.getId());
-            pstm.setObject(2, customer.getName());
-            pstm.setObject(3, customer.getAddress());
-            return pstm.executeUpdate() > 0;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return false;
-        }
+    public boolean save(Customer customer) throws Exception {
+            return CrudUtil.execute("INSERT INTO Customer VALUES (?,?,?)", customer.getId(),customer.getName(),customer.getAddress());
     }
 
 

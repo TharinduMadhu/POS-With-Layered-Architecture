@@ -27,7 +27,7 @@ import java.util.List;
 
 public class BusinessLayer {
     // Generate a new id
-    public static String generateNewCustomerId() {
+    public static String generateNewCustomerId() throws Exception {
         CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getInstance().getDAO(DAOType.Customer);
         String lastCustomerId = customerDAO.getLastCustomerId().replace("C", "");
         if (lastCustomerId == null) {
@@ -47,7 +47,7 @@ public class BusinessLayer {
         }
     }
 
-    public static String generateNewOrderId() {
+    public static String generateNewOrderId() throws Exception {
         OrderDAO orderDAO = (OrderDAO) DAOFactory.getInstance().getDAO(DAOType.Order);
         String lastOrderId = orderDAO.getLastOrderId().replace("OD", "");
         if (lastOrderId == null) {
@@ -67,7 +67,7 @@ public class BusinessLayer {
         }
     }
 
-    public static String getNewItemId() {
+    public static String getNewItemId() throws Exception {
         ItemDAO itemDAO = (ItemDAO) DAOFactory.getInstance().getDAO(DAOType.Item);
         String lastItemId = itemDAO.getLastItemId();
         if (lastItemId == null) {
@@ -88,7 +88,7 @@ public class BusinessLayer {
         }
     }
 
-    public static List<CustomerTM> getAllCustomers() {
+    public static List<CustomerTM> getAllCustomers() throws Exception {
         CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getInstance().getDAO(DAOType.Customer);
         List<Customer> allCustomers = customerDAO.findAll();
         List<CustomerTM> customers = new ArrayList<>();
@@ -99,22 +99,22 @@ public class BusinessLayer {
     }
 
 
-    public static boolean saveCustomer(String id, String name, String address) {
+    public static boolean saveCustomer(String id, String name, String address) throws Exception {
         CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getInstance().getDAO(DAOType.Customer);
         return customerDAO.save(new Customer(id, name, address));
     }
 
-    public static boolean deleteCustomer(String customerId) {
+    public static boolean deleteCustomer(String customerId) throws Exception {
         CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getInstance().getDAO(DAOType.Customer);
         return customerDAO.delete(customerId);
     }
 
-    public static boolean updateCustomer(String id, String name, String address) {
+    public static boolean updateCustomer(String id, String name, String address) throws Exception {
         CustomerDAO customerDAO = (CustomerDAO) DAOFactory.getInstance().getDAO(DAOType.Customer);
         return customerDAO.update(new Customer(id, name, address));
     }
 
-    public static List<ItemTM> getAllItems() {
+    public static List<ItemTM> getAllItems() throws Exception {
         ItemDAO itemDAO = (ItemDAO) DAOFactory.getInstance().getDAO(DAOType.Item);
         List<Item> items = itemDAO.findAll();
         List<ItemTM> allItems = new ArrayList();
@@ -125,19 +125,19 @@ public class BusinessLayer {
         return allItems;
     }
 
-    public static boolean saveItem(String code, String description, int qtyOnHand, double unitPrice) {
+    public static boolean saveItem(String code, String description, int qtyOnHand, double unitPrice) throws Exception {
         ItemDAO itemDAO = (ItemDAO) DAOFactory.getInstance().getDAO(DAOType.Item);
         return itemDAO.save(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
 
 
-    public static boolean deleteItem(String itemCode) {
+    public static boolean deleteItem(String itemCode) throws Exception {
         ItemDAO itemDAO = (ItemDAO) DAOFactory.getInstance().getDAO(DAOType.Item);
         return itemDAO.delete(itemCode);
     }
 
 
-    public static boolean updateItem(String code, String description, int qtyOnHand, double unitPrice) {
+    public static boolean updateItem(String code, String description, int qtyOnHand, double unitPrice) throws Exception {
         ItemDAO itemDAO = (ItemDAO) DAOFactory.getInstance().getDAO(DAOType.Item);
         return itemDAO.update(new Item(code, description, BigDecimal.valueOf(unitPrice), qtyOnHand));
     }
